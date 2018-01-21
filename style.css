@@ -1,0 +1,86 @@
+/* ---- reset ---- */
+
+html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+  
+  body {
+    margin: 0;
+  }
+#background {
+    background-color: greenyellow;
+    /* height: 500px;
+    width: 500px; */
+    /* display:flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between; */
+}  
+
+.ace-space {
+    height: 18%;
+    width: 48%;
+    border: 2px solid black;
+    float: right;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.ace-stack {
+    height: 90%;
+    width: 20%;
+    border: 1px solid gray;
+}
+
+.free-cards {
+    height: 18%;
+    width: 24%;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.card-stack,
+.flipped-card {
+    height: 90%;
+    width: 44%;
+    border: 1px solid gray;
+}
+
+.card-piles-container {
+    height: 18%;
+    width: 95%;
+    border: 2px solid black;
+    margin: 10% auto;
+    display:flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+
+}
+
+.card-pile {
+    height: 90%;
+    width: 10%;
+    border: 1px solid gray;
+}
+
+.score-container {
+    height: 10%;
+    width: 40%;
+    border: 2px solid black;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display:flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+}
