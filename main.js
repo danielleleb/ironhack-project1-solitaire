@@ -1,5 +1,6 @@
 'use strict'
 
+
 function main() {
     var STARTING_TIME = 0;
     var NUMBER_OF_MOVES = 0;
@@ -52,7 +53,7 @@ function main() {
 
     function buildGame(){
         stage = 'game';
-        game = new Game(mainElement);
+        game = new Game(mainElement, STARTING_TIME);
 
         // window.setTimeout(function() {
         //     destroyGame();

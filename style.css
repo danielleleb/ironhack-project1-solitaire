@@ -89,3 +89,9 @@ html {
     height:129px;
     width: 92px;
 }
+
+.card {
+    border: 3px solid purple;
+    position: absolute;
+    background: white;
+}
