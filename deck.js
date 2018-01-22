@@ -5,9 +5,7 @@ function main() {
     var NUMBER_OF_MOVES = 0;
 
     var mainElement = document.querySelector('#site-main');
-
     var stage;
-    var game;
 
     // -- SPLASH
 
@@ -48,7 +46,9 @@ function main() {
         splashElement.remove();
         }
 
-        //GAMEEEE
+    // -- GAMEEEE
+
+    var game;
 
     function buildGame(){
         stage = 'game';
@@ -63,13 +63,16 @@ function main() {
         game.destroy();
         // $(game).remove();
     }
-        //GAME OVERRRR
+
+    // -- GAME OVERRRR
+
     var gameOverElement;
     var playAgainButton;
     var handlePlayAgainClick = function() {
         destroyGameOver();
         buildGame();
     }
+
     function buildGameOver() {
         stage = 'gameOver';
 
@@ -108,8 +111,7 @@ function main() {
         gameOverElement.remove();
     }
 
-
-
-buildSplash();
+    buildSplash();
 }
+
 window.onload = main;

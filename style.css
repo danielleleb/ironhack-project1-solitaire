@@ -63,7 +63,6 @@ html {
     align-items: center;
     justify-content: space-around;
     flex-direction: row;
-
 }
 
 .card-pile {
@@ -83,4 +82,10 @@ html {
     align-items: center;
     justify-content: space-around;
     flex-direction: row;
+}
+
+.sprite {
+    background-image: url('./baraja-poker1.png');
+    height:129px;
+    width: 92px;
 }
