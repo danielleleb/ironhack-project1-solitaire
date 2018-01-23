@@ -92,8 +92,6 @@ html {
 }
 
 .card {
-    border: 3px solid purple;
-    position: absolute;
     background: white;
 }
 

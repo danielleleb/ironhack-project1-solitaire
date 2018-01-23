@@ -37,7 +37,7 @@ function Game(mainElement, timer) {
             self.selectedCard.classList.remove('on');
             self.hasCard = false;
             
-            self.reStockFlippedCard();
+            // self.reStockFlippedCard();
     
         }
         else if (e.currentTarget.children.length > 0){
@@ -48,6 +48,21 @@ function Game(mainElement, timer) {
     
         }
     }  
+    self._handleCardStackClick = function(e) {
+        if (self.flippedCardElement.children.length === 0) {
+            self._getNextCard();
+            self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
+            self.nextCard.draw(self.flippedCardElement);
+        }
+        // else if (self.flippedCardElement.children.length > 0) {
+        //     self._getNextCard();
+
+        // }
+    }
+    //self.newHandlerClickWhatever
+    // self._handleCardRestock = function (e) {
+    //     if (current)
+    // }
 
     self.init();
 }
@@ -69,7 +84,6 @@ Game.prototype.init = function() {
     self.buildLayout();
     self.createDeck();
     self.startGame();
-
 }
 
 Game.prototype.startGame = function() {
@@ -80,19 +94,7 @@ Game.prototype.startGame = function() {
     self.nextCard.draw(self.flippedCardElement);
 
 }
-Game.prototype.reStockFlippedCard = function() {
-    var self = this;
 
-    // if (self.flippedCardElement.children.length === 0) {
-    self.cardStackElement = self._getChildrenElementInPosition(self.freeCardsElement, 0);
-    $(self.cardStackElement).click(function() {
-        self._getNextCard();
-        self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
-        self.nextCard.draw(self.flippedCardElement);
-    })
-    
-}
-// }
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
     return element.children[pos];
 }
@@ -158,10 +160,11 @@ Game.prototype.buildLayout = function () {
     self.freeCardsElement = document.createElement('div');
     self.freeCardsElement.setAttribute('class', 'free-cards');
     
-    var cardStack = document.createElement('div');
-    cardStack.setAttribute('class','card-stack');
-    self.freeCardsElement.appendChild(cardStack);
-    
+    self.cardStackElement = document.createElement('div');
+    self.cardStackElement.setAttribute('class','card-stack');
+    self.freeCardsElement.appendChild(self.cardStackElement);
+    self.freeCardsElement.addEventListener('click', self._handleCardStackClick)
+
     var flippedCard = document.createElement('div');
     flippedCard.setAttribute('class','flipped-card');
     flippedCard.addEventListener('click', self._handleClick);

@@ -13,6 +13,7 @@ Card.prototype.draw = function(containerElement) {
     var self = this;
 
     var cardElement = document.createElement('div');
+    cardElement.setAttribute('class', 'card');
 
     var cardSuit = document.createElement('h1');
     cardSuit.innerText = self.suit
