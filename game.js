@@ -25,6 +25,7 @@ function Game(mainElement, timer) {
     self.suits;
     self.cards;
     self.nextCard;
+    
 
     self._handleClick = function(e) {
         console.log(e.currentTarget);
@@ -82,12 +83,16 @@ Game.prototype.startGame = function() {
 Game.prototype.reStockFlippedCard = function() {
     var self = this;
 
-    if (self.flippedCardElement.children.length === 0) {
-    self._getNextCard();
-    self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
-    self.nextCard.draw(self.flippedCardElement);
-    }
+    // if (self.flippedCardElement.children.length === 0) {
+    self.cardStackElement = self._getChildrenElementInPosition(self.freeCardsElement, 0);
+    $(self.cardStackElement).click(function() {
+        self._getNextCard();
+        self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
+        self.nextCard.draw(self.flippedCardElement);
+    })
+    
 }
+// }
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
     return element.children[pos];
 }
