@@ -9,6 +9,7 @@ html {
   
   body {
     margin: 0;
+    text-align: center;
   }
 #background {
     background-color: greenyellow;
@@ -94,4 +95,8 @@ html {
     border: 3px solid purple;
     position: absolute;
     background: white;
+}
+
+.on {
+    border: 2px solid blue;
 }

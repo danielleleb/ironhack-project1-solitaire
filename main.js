@@ -112,7 +112,7 @@ function main() {
         gameOverElement.remove();
     }
 
-    buildSplash();
+    buildGame();
 }
 
 window.onload = main;
