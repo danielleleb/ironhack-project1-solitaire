@@ -25,6 +25,7 @@ function Game(mainElement, timer) {
     self.suits;
     self.cards;
     self.nextCard;
+    self.topCard;
     
 
     self._handleClick = function(e) {
@@ -56,15 +57,18 @@ function Game(mainElement, timer) {
             self.nextCard.draw(self.flippedCardElement);
         }
         else if (self.flippedCardElement.children.length > 0) {
+            var prevCard = self._getChildrenElementInPosition(self.flippedCardElement, 0)
             self._getNextCard();
+            var newestCard = self.nextCard.draw(self.flippedCardElement);
+
+           $(prevCard).replaceWith(newestCard);
+            // // self.cardElement = self._getChildrenElementInPosition(self.flippedCardElement, 0);
+            // self.topCard = self._getChildrenElementInPosition(self.flippedCardElement, 1)
+            // self.topCard.add.classList('on-top')
+
 
         }
     }
-    //self.newHandlerClickWhatever
-    // self._handleCardRestock = function (e) {
-    //     if (current)
-    // }
-
     self.init();
 }
 
