@@ -49,15 +49,16 @@ function Game(mainElement, timer) {
         }
     }  
     self._handleCardStackClick = function(e) {
+        self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
+
         if (self.flippedCardElement.children.length === 0) {
             self._getNextCard();
-            self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
             self.nextCard.draw(self.flippedCardElement);
         }
-        // else if (self.flippedCardElement.children.length > 0) {
-        //     self._getNextCard();
+        else if (self.flippedCardElement.children.length > 0) {
+            self._getNextCard();
 
-        // }
+        }
     }
     //self.newHandlerClickWhatever
     // self._handleCardRestock = function (e) {
@@ -163,7 +164,7 @@ Game.prototype.buildLayout = function () {
     self.cardStackElement = document.createElement('div');
     self.cardStackElement.setAttribute('class','card-stack');
     self.freeCardsElement.appendChild(self.cardStackElement);
-    self.freeCardsElement.addEventListener('click', self._handleCardStackClick)
+    self.cardStackElement.addEventListener('click', self._handleCardStackClick)
 
     var flippedCard = document.createElement('div');
     flippedCard.setAttribute('class','flipped-card');
