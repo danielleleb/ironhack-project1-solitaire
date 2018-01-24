@@ -19,49 +19,55 @@ function Game(mainElement, timer) {
     self.width;
     self.height;
     self.movesCounter;
-    self.hasCard;
+
+    // -- STATE
     self.selectedCard;
+    self.state;
 
     // -- CARDS
     self.values;
     self.suits;
+
     self.deck;
-    self.nextCard;
-    self.topCard;
-    self.newestCard;
-    self.cardPile;
-    
+    self.flippedCards;
+
+
 
     self._handleClick = function(e) {
         console.log(e.currentTarget);
     
-        if (self.hasCard) {
+        if (self.state) {
+            self._computeState();
             var destinationElement = e.currentTarget;
             destinationElement.appendChild(self.selectedCard);
     
-            self.selectedCard.classList.remove('on');
-            self.hasCard = false;    
+            self.selectedCard.classList.remove('on');   
         }
+        // new
+        // else if (e.currentTarget == self.flippedCardElement ) {
+        //     self.selectedCard = self.flippedCards[0]
+        //     self.selectedCard.classList.add('on')
+        // }
+        //new
         else if (e.currentTarget.children.length > 0){
-
-            self.hasCard = true;
-            self.selectedCard = self._getChildrenElementInPosition(e.currentTarget, 0);
-            self.selectedCard.classList.add('on');
-    
+            self.state = e.currentTarget.id;
+            self._selectCardOn(e.currentTarget);
         }
     }  
 
     self._handleCardStackClick = function(e) {
-        // var self = this;
-        self._getNextCard();
-        self.nextCard.draw(self.flippedCardElement);
-        //get next card
-        //show in the flippedElement
-        self.flippedCards = [];
-        self.flippedCards.push(self.nextCard);
+        self._getNextCard();  
+        self._drawFlippedCard();  
     }
   
     self.init();
+}
+
+Game.prototype._selectCardOn = function(element) {
+    var self = this;
+    
+    self.selectedCard = self._getChildrenElementInPosition(element, 0);
+    self.selectedCard.classList.add('on');
 }
 
 Game.prototype.init = function() {
@@ -71,6 +77,7 @@ Game.prototype.init = function() {
     self.hasCard = false;
     self.score = 0;
     self.deck = [];
+    self.flippedCards = [];
 
     self.finished = false;
     self.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -78,9 +85,51 @@ Game.prototype.init = function() {
     self.width = window.innerWidth;
     self.height = window.innerHeight;
 
+
     self.buildLayout();
     self.createDeck();
     self.startGame();
+}
+
+Game.prototype._computeState = function() {
+    var self = this;
+
+    switch(self.state) {
+        case 'flipped-card':
+
+            self.flippedCards.shift();
+            self._drawFlippedCard();
+
+            break;
+        default:
+            console.log('something wrong with the id');
+    }
+
+    self.state = null;
+}
+
+//Pre:- The flipped it will be always at posision 0
+Game.prototype._drawFlippedCard = function () {
+    var self = this;
+    var card = self.flippedCards[0];
+
+    if (card) {
+        var cardElement = card.createCardElement();
+        self._removeChildOf(self.flippedCardElement);
+        self.flippedCardElement.appendChild(cardElement);
+    }
+}
+
+//TODO:- Change name and behaviour
+Game.prototype._removeChildOf = function (element) {
+    if (element.children.length > 0) {
+        element.removeChild(element.firstChild);
+    }
+}
+
+Game.prototype._getNextCard = function() {
+    var self = this;
+    self.flippedCards.unshift(self.deck.shift());
 }
 
 Game.prototype.startGame = function() {
@@ -89,16 +138,8 @@ Game.prototype.startGame = function() {
 
 }
 
-
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
     return element.children[pos];
-}
-
-Game.prototype._getNextCard = function() {
-    var self = this;
-    self.nextCard = self.deck.shift();
-    
-
 }
 
 Game.prototype.buildLayout = function () {
@@ -146,6 +187,7 @@ Game.prototype.buildLayout = function () {
 
     self.flippedCardElement = document.createElement('div');
     self.flippedCardElement.setAttribute('class','flipped-card');
+    self.flippedCardElement.setAttribute('id','flipped-card');
     self.flippedCardElement.addEventListener('click', self._handleClick);
     freeCardsElement.appendChild(self.flippedCardElement);
     
@@ -157,10 +199,10 @@ Game.prototype.buildLayout = function () {
 
 
     for (var i = 0; i < 7; i++) {
-        self.cardPile = document.createElement('div');
-        self.cardPile.setAttribute('class', 'card-pile');
-        self.cardPile.addEventListener('click', self._handleClick);
-        self.cardsPilesElement.appendChild(self.cardPile);
+        var cardPile = document.createElement('div');
+        cardPile.setAttribute('class', 'card-pile');
+        cardPile.addEventListener('click', self._handleClick);
+        self.cardsPilesElement.appendChild(cardPile);
     }
     self.gameElement.appendChild(self.cardsPilesElement);
 

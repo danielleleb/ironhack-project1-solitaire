@@ -107,3 +107,10 @@ html {
     position: absolute;
     z-index: 1;
 }
+
+.flipped-card div {
+    display: none;
+}
+.flipped-card div:last-child {
+    display: block;
+}

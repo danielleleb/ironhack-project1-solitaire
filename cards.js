@@ -9,7 +9,7 @@ function Card(value, suit, containerElement) {
 
 }
 
-Card.prototype.draw = function(containerElement) {
+Card.prototype.createCardElement = function() {
     var self = this;
 
     var cardElement = document.createElement('div');
@@ -23,5 +23,5 @@ Card.prototype.draw = function(containerElement) {
     cardValue.innerText = self.value
     cardElement.appendChild(cardValue);
 
-    containerElement.appendChild(cardElement);
+    return cardElement;
 }
