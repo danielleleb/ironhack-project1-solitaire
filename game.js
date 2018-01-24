@@ -7,7 +7,9 @@ function Game(mainElement, timer) {
     self.timerCounter = timer;
     
     self.gameElement;
-    self.freeCardsElement;
+    self.cardStackElement;
+    self.flippedCardElement;
+
     self.aceSpaceElement;
     self.cardsPilesElement;
     self.scoreElement;
@@ -23,9 +25,11 @@ function Game(mainElement, timer) {
     // -- CARDS
     self.values;
     self.suits;
-    self.cards;
+    self.deck;
     self.nextCard;
     self.topCard;
+    self.newestCard;
+    self.cardPile;
     
 
     self._handleClick = function(e) {
@@ -36,10 +40,7 @@ function Game(mainElement, timer) {
             destinationElement.appendChild(self.selectedCard);
     
             self.selectedCard.classList.remove('on');
-            self.hasCard = false;
-            
-            // self.reStockFlippedCard();
-    
+            self.hasCard = false;    
         }
         else if (e.currentTarget.children.length > 0){
 
@@ -49,26 +50,17 @@ function Game(mainElement, timer) {
     
         }
     }  
+
     self._handleCardStackClick = function(e) {
-        self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
-
-        if (self.flippedCardElement.children.length === 0) {
-            self._getNextCard();
-            self.nextCard.draw(self.flippedCardElement);
-        }
-        else if (self.flippedCardElement.children.length > 0) {
-            var prevCard = self._getChildrenElementInPosition(self.flippedCardElement, 0)
-            self._getNextCard();
-            var newestCard = self.nextCard.draw(self.flippedCardElement);
-
-           $(prevCard).replaceWith(newestCard);
-            // // self.cardElement = self._getChildrenElementInPosition(self.flippedCardElement, 0);
-            // self.topCard = self._getChildrenElementInPosition(self.flippedCardElement, 1)
-            // self.topCard.add.classList('on-top')
-
-
-        }
+        // var self = this;
+        self._getNextCard();
+        self.nextCard.draw(self.flippedCardElement);
+        //get next card
+        //show in the flippedElement
+        self.flippedCards = [];
+        self.flippedCards.push(self.nextCard);
     }
+  
     self.init();
 }
 
@@ -78,7 +70,7 @@ Game.prototype.init = function() {
     self.movesCounter = 0;
     self.hasCard = false;
     self.score = 0;
-    self.cards = [];
+    self.deck = [];
 
     self.finished = false;
     self.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -92,13 +84,11 @@ Game.prototype.init = function() {
 }
 
 Game.prototype.startGame = function() {
+    //show all the cards in the "Zone 3"
     var self = this;
 
-    self._getNextCard();
-    self.flippedCardElement = self._getChildrenElementInPosition(self.freeCardsElement, 1);
-    self.nextCard.draw(self.flippedCardElement);
-
 }
+
 
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
     return element.children[pos];
@@ -106,26 +96,10 @@ Game.prototype._getChildrenElementInPosition = function(element, pos) {
 
 Game.prototype._getNextCard = function() {
     var self = this;
+    self.nextCard = self.deck.shift();
     
-    self.nextCard = self.cards.shift();
+
 }
-
-// What Byron wrote earlier and what I tried to do
-
-    // $('.card-pile:first').append($('.on'))
-    // if (e.currentTarget.children.length > 0) {
-    //     var selectCard = e.currentTarget.children;
-    //     $('.card-pile:first').append(selectCard);
-    //     }
-    // else if (e.currentTarget.children.length == 0) {
-    //     self.flippedCard.appendChild(self.nextCard)
-    // }
-    
-    // First checkt whicht state we are self.currentStatee = 0
-        //if e.currentTarge has children.length > 0 => we have at leats one card. Let's take the last one!
-        // get children and update State
-    // self.currentState = 1
-    // we take the card, and move to the e.currentTarget and update state
 
 Game.prototype.buildLayout = function () {
     var self = this;
@@ -162,20 +136,20 @@ Game.prototype.buildLayout = function () {
     self.gameElement.appendChild(self.aceSpaceElement);
 
     // TOP LEFT CORNER FREE CARDS
-    self.freeCardsElement = document.createElement('div');
-    self.freeCardsElement.setAttribute('class', 'free-cards');
+    var freeCardsElement = document.createElement('div');
+    freeCardsElement.setAttribute('class', 'free-cards');
     
     self.cardStackElement = document.createElement('div');
     self.cardStackElement.setAttribute('class','card-stack');
-    self.freeCardsElement.appendChild(self.cardStackElement);
+    freeCardsElement.appendChild(self.cardStackElement);
     self.cardStackElement.addEventListener('click', self._handleCardStackClick)
 
-    var flippedCard = document.createElement('div');
-    flippedCard.setAttribute('class','flipped-card');
-    flippedCard.addEventListener('click', self._handleClick);
-    self.freeCardsElement.appendChild(flippedCard);
+    self.flippedCardElement = document.createElement('div');
+    self.flippedCardElement.setAttribute('class','flipped-card');
+    self.flippedCardElement.addEventListener('click', self._handleClick);
+    freeCardsElement.appendChild(self.flippedCardElement);
     
-    self.gameElement.appendChild(self.freeCardsElement);
+    self.gameElement.appendChild(freeCardsElement);
 
     // CARD PILES IN CENTER
     self.cardsPilesElement = document.createElement('div');
@@ -183,10 +157,10 @@ Game.prototype.buildLayout = function () {
 
 
     for (var i = 0; i < 7; i++) {
-        var cardPile = document.createElement('div');
-        cardPile.setAttribute('class', 'card-pile');
-        cardPile.addEventListener('click', self._handleClick);
-        self.cardsPilesElement.appendChild(cardPile);
+        self.cardPile = document.createElement('div');
+        self.cardPile.setAttribute('class', 'card-pile');
+        self.cardPile.addEventListener('click', self._handleClick);
+        self.cardsPilesElement.appendChild(self.cardPile);
     }
     self.gameElement.appendChild(self.cardsPilesElement);
 
@@ -218,7 +192,7 @@ Game.prototype.createDeck = function (){
         for (var j = 0; j < self.values.length; j++) {
             var value = self.values[j];
             var newCard = new Card(value, suit, self.gameElement);
-            self.cards.push(newCard);
+            self.deck.push(newCard);
         }   
     }
 
@@ -229,13 +203,13 @@ Game.prototype.shuffleCards = function (){
     var self = this;
     var temporaryValue; 
     var randomIndex;
-    var currentIndex = self.cards.length - 1; 
+    var currentIndex = self.deck.length - 1; 
 
     while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
-        temporaryValue = self.cards[currentIndex];
-        self.cards[currentIndex] = self.cards [randomIndex];
-        self.cards[randomIndex] = temporaryValue;
+        temporaryValue = self.deck[currentIndex];
+        self.deck[currentIndex] = self.deck [randomIndex];
+        self.deck[randomIndex] = temporaryValue;
 
         currentIndex -= 1;
     }
@@ -246,102 +220,3 @@ Game.prototype.destroy = function(){
     self.finished = true;
     self.gameElement.remove();
 }
-
-
-
-
-
-
-
-// Game.prototype.dealCards = function(cardsArr) {
-//     // var self = this;
-//     // for (var k = 0; k <= cardsArr.length; k++) {
-//     //    var name = cardsArr[k].name[k];
-//     //    var suit = cardsArr[k].suit[k];
-//     // self.cardImg = document.createElement('div');
-//     // self.cardImg.setAttribute('class', 'card');
-//     // self.cardStack.appendChild(self.cardImg);
-//     // self.cardSuit = document.createElement('h1');
-//     // self.cardSuit.innerText = suit;
-//     // self.cardImg.appendChild(self.cardSuit);
-//     // self.cardName = document.createElement('h2');
-//     // self.cardName.innerText = name;
-//     // self.cardImg.appendChild(self.cardName);
-
-//     }
-// }
-
-
-
-
-/// ---- not sure if i need this anymore or not
-
-  // var shuffleCards = function(cards) {
-    //     var currentIndex = cards.length, temporaryValue, randomIndex;
-
-    //     while (0 !== currentIndex) {
-    //         randomIndex = Math.floor(Math.random() * currentIndex);
-    //         currentIndex -= 1
-       
-    //        temporaryValue = cards[currentIndex];
-    //        cards[currentIndex] = cards[randomIndex];
-    //        cards[randomIndex] = temporaryValue
-    //     }
-    //     return self.cards;
-    // }
-
-
-
-// ---- a sad attempt at making the cards
-
-
-// Game.prototype.makeCards = function() {
-//     self= this;
-//     // game = new Game(mainElement);
-//     self.names = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-//     self.suits = ['hearts', 'clubs', 'diamonds', 'spades'];
-//     self.cards = [];
-//     for (var i = 0; i < self.suits.length; i++) {
-//         for (var j = 0; j < self.names.length; j++) {
-//             self.card = {};
-//             self.card.suit = self.suits[i];
-//             self.card.name = self.names[j];
-            
-//             // self.cardImg = document.createElement('div');
-//             // self.cardImg.setAttribute('class', 'card');
-//             // self.cardStack.appendChild(self.cardImg);
-//             // self.cardSuit = document.createElement('h1');
-//             // self.cardSuit.innerText = self.suits[i];
-//             // self.cardImg.appendChild(self.cardSuit);
-            
-//             // self.cardName = document.createElement('h2');
-//             // self.cardName.innerText = self.names[j];
-//             // self.cardImg.appendChild(self.cardName);
-
-//             self.cards.push(self.card);
-//         }
-//     }
-    
-
-  
-    
-    // console.log(self.cards);
-    // self.cards.forEach(function(cards) {
-    //     // var self = this;
-    //     // var suits = cards.suits;
-    //     // var names = cards.names;
-
-    //     self.cardImg = document.createElement('div');
-    //     self.cardImg.setAttribute('class', 'card');
-    //     self.cardStack.appendChild(self.cardImg);
-    //     self.cardSuit = document.createElement('h1');
-    //     self.cardSuit.innerText = cards.suit;
-    //     self.cardImg.appendChild(self.cardSuit);
-        
-    //     self.cardName = document.createElement('h2');
-    //     self.cardName.innerText = cards.name;
-    //     self.cardImg.appendChild(self.cardName);
-
-    // })
-// console.log(self.cards);
-// }
