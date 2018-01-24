@@ -6,9 +6,11 @@ function Game(mainElement, timer) {
     self.mainElement = mainElement;
     self.timerCounter = timer;
     
+    // -- ELEMENTS
     self.gameElement;
     self.cardStackElement;
     self.flippedCardElement;
+    self.selectedCardElement;
 
     self.aceSpaceElement;
     self.cardsPilesElement;
@@ -21,7 +23,6 @@ function Game(mainElement, timer) {
     self.movesCounter;
 
     // -- STATE
-    self.selectedCard;
     self.state;
 
     // -- CARDS
@@ -30,28 +31,18 @@ function Game(mainElement, timer) {
 
     self.deck;
     self.flippedCards;
-
-
+    self.selectedCards;
+    self.aceCards;
 
     self._handleClick = function(e) {
-        console.log(e.currentTarget);
     
         if (self.state) {
-            self._computeState();
-            var destinationElement = e.currentTarget;
-            destinationElement.appendChild(self.selectedCard);
-    
-            self.selectedCard.classList.remove('on');   
+            self._computeState(e.currentTarget);
+            self._unselectCard();
         }
-        // new
-        // else if (e.currentTarget == self.flippedCardElement ) {
-        //     self.selectedCard = self.flippedCards[0]
-        //     self.selectedCard.classList.add('on')
-        // }
-        //new
         else if (e.currentTarget.children.length > 0){
             self.state = e.currentTarget.id;
-            self._selectCardOn(e.currentTarget);
+            self._selectCard(e.currentTarget);
         }
     }  
 
@@ -63,13 +54,6 @@ function Game(mainElement, timer) {
     self.init();
 }
 
-Game.prototype._selectCardOn = function(element) {
-    var self = this;
-    
-    self.selectedCard = self._getChildrenElementInPosition(element, 0);
-    self.selectedCard.classList.add('on');
-}
-
 Game.prototype.init = function() {
     var self = this;
 
@@ -78,6 +62,7 @@ Game.prototype.init = function() {
     self.score = 0;
     self.deck = [];
     self.flippedCards = [];
+    self.aceCards = [[],[],[],[]];
 
     self.finished = false;
     self.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -91,21 +76,61 @@ Game.prototype.init = function() {
     self.startGame();
 }
 
-Game.prototype._computeState = function() {
+Game.prototype._computeState = function(element) {
     var self = this;
 
     switch(self.state) {
         case 'flipped-card':
-
-            self.flippedCards.shift();
-            self._drawFlippedCard();
-
+            self._moveFlippedCardTo(element);
+            self._showNextFlippedCard();    
             break;
         default:
             console.log('something wrong with the id');
     }
+    self._computeDestination(element.id);
 
     self.state = null;
+}
+
+Game.prototype._computeDestination = function (id) {
+    var self = this;
+    if (id.includes('ace-stack')) {
+        //Pre:- The number it will be at the end of id
+        var aceStackPosition = id.slice(id.length - 1) - 1;
+        self._addCardToAce(aceStackPosition)
+        console.log(self.aceCards);
+    }
+}
+
+Game.prototype._addCardToAce = function (pos) {
+    var self = this;
+    
+    self.aceCards[pos].unshift(self.selectedCards);
+}
+
+Game.prototype._showNextFlippedCard = function() {
+    var self = this;
+
+    self.selectedCards = self.flippedCards.shift();
+    self._drawFlippedCard();
+
+}
+
+Game.prototype._moveFlippedCardTo = function (elem) {
+    var self = this;
+
+    elem.appendChild(self.selectedCardElement);
+}
+
+Game.prototype._drawAceCard = function () {
+    var self = this;
+    var card = self.acePile[0];
+
+    if (card) {
+        // var cardElement = card.createCardElement();
+        self._removeChildOf(self.aceStack1);
+        self.aceStack1.append(self.selectedCardElement);
+    }
 }
 
 //Pre:- The flipped it will be always at posision 0
@@ -135,7 +160,19 @@ Game.prototype._getNextCard = function() {
 Game.prototype.startGame = function() {
     //show all the cards in the "Zone 3"
     var self = this;
+}
 
+Game.prototype._selectCard = function(element) {
+    var self = this;
+    
+    self.selectedCardElement = self._getChildrenElementInPosition(element, 0);
+    self.selectedCardElement.classList.add('on');
+}
+
+Game.prototype._unselectCard = function () {
+    var self = this;
+
+    self.selectedCardElement.classList.remove('on'); 
 }
 
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
@@ -156,21 +193,25 @@ Game.prototype.buildLayout = function () {
 
     var aceStack1 = document.createElement('div');
     aceStack1.setAttribute('class', 'ace-stack');
+    aceStack1.setAttribute('id', 'ace-stack1');
     aceStack1.addEventListener('click', self._handleClick);
     self.aceSpaceElement.appendChild(aceStack1);
 
     var aceStack2 = document.createElement('div');
     aceStack2.setAttribute('class', 'ace-stack');
+    aceStack2.setAttribute('id', 'ace-stack2');
     aceStack2.addEventListener('click', self._handleClick);
     self.aceSpaceElement.appendChild(aceStack2);
 
     var aceStack3 = document.createElement('div');
     aceStack3.setAttribute('class', 'ace-stack');
+    aceStack3.setAttribute('id', 'ace-stack3');
     aceStack3.addEventListener('click', self._handleClick);
     self.aceSpaceElement.appendChild(aceStack3);
 
     var aceStack4 = document.createElement('div');
     aceStack4.setAttribute('class', 'ace-stack');
+    aceStack4.setAttribute('id', 'ace-stack4');
     aceStack4.addEventListener('click', self._handleClick);
     self.aceSpaceElement.appendChild(aceStack4);
 
