@@ -99,19 +99,7 @@ Game.prototype._computeDestination = function (id) {
         var aceStackPosition = id.slice(id.length - 1) - 1;
         self._addCardToAce(aceStackPosition)
         console.log(self.aceCards);
-        var card = self.aceCards[0][0]
-
-        if (card) {
-            self._removeChildOf(self.aceCards[0]);
-            self.flippedCardElement.appendChild(cardElement);
-
-        }
     }
-    else if (id.includes('card-pile')) {
-        var cardPilePosition = id.slice(id.length - 1) -1;
-        self.flippedCardElement.appendChild(cardElement);
-    }
-    
 }
 
 Game.prototype._addCardToAce = function (pos) {

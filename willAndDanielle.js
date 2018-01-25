@@ -31,17 +31,38 @@ function Game(mainElement, timer) {
 
     self.deck;
     self.flippedCards;
-    self.selectedCards;
+    self.selectedCard;
     self.aceCards;
+    self.cardPiles;
+    self.previousSelectedCardPosition;
+    self.previousPileType
 
     self._handleClick = function(e) {
-    
+
         if (self.state) {
-            self._computeState(e.currentTarget);
+            console.log('Moved the card')
+            self._computeState(e.currentTarget, self.previousSelectedCardPosition);
+            self.previousSelectedCardPosition = null
             self._unselectCard();
         }
         else if (e.currentTarget.children.length > 0){
+            console.log('Selected a card')
             self.state = e.currentTarget.id;
+            console.log('New state: ', self.state);
+            if (e.currentTarget.id === 'flipped-card') {
+                self.previousPileType = 'flipped-card';
+                self.selectedCard = self.flippedCards[0];
+            }
+            if (e.currentTarget.id.includes('card-pile')) {
+                self.previousPileType = 'card-pile';
+                self.previousPilePosition = e.currentTarget.id.slice(e.currentTarget.id.length - 1) -1;
+                console.log('self.previousPilePosition: ', e.currentTarget.id)
+                self.selectedCard = self.cardPiles[self.previousPilePosition][0];
+            }
+            console.log('Target: ', e.currentTarget)
+            console.log('Flipped Cards: ', self.flippedCards);
+            console.log('selectedcard', self.selectedCard)
+            self.previousSelectedCardPosition = e.currentTarget.id.slice(e.currentTarget.id.length - 1) -1;
             self._selectCard(e.currentTarget);
         }
     }  
@@ -63,6 +84,7 @@ Game.prototype.init = function() {
     self.deck = [];
     self.flippedCards = [];
     self.aceCards = [[],[],[],[]];
+    self.cardPiles = [[],[],[],[],[],[],[]]
 
     self.finished = false;
     self.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -76,48 +98,68 @@ Game.prototype.init = function() {
     self.startGame();
 }
 
-Game.prototype._computeState = function(element) {
+Game.prototype._computeState = function(element, previousPile) {
     var self = this;
 
-    switch(self.state) {
-        case 'flipped-card':
-            self._moveFlippedCardTo(element);
-            self._showNextFlippedCard();    
-            break;
-        default:
-            console.log('something wrong with the id');
+    // console.log('Previous Pile: ', previousPile)
+
+    if (self.state == 'flipped-card') {
+        self._moveFlippedCardTo(element);
+        self._showNextFlippedCard();
+        // console.log('flip')
     }
-    self._computeDestination(element.id);
+    else if (self.state.includes('ace-stack')) {
+        // console.log('ace');
+        self._moveFlippedCardTo(element);
+        self._showNextFlippedCard();
+    }
+    else if (self.state.includes('card-pile')) {
+        // console.log('card-pile')
+        self._moveFlippedCardTo(element);
+        self._showNextFlippedCard();
+    }
+ 
+
+    self._computeDestination(element.id, previousPile);
 
     self.state = null;
 }
 
-Game.prototype._computeDestination = function (id) {
+Game.prototype._computeDestination = function (id, previousPile) {
     var self = this;
     if (id.includes('ace-stack')) {
         //Pre:- The number it will be at the end of id
         var aceStackPosition = id.slice(id.length - 1) - 1;
         self._addCardToAce(aceStackPosition)
-        console.log(self.aceCards);
+
         var card = self.aceCards[0][0]
 
         if (card) {
+            // var cardElement = card.createCardElement();
             self._removeChildOf(self.aceCards[0]);
             self.flippedCardElement.appendChild(cardElement);
-
         }
     }
     else if (id.includes('card-pile')) {
         var cardPilePosition = id.slice(id.length - 1) -1;
-        self.flippedCardElement.appendChild(cardElement);
-    }
-    
+        self._addCardToPile(cardPilePosition, previousPile)    }
 }
+Game.prototype._addCardToPile = function (pos, previousCardPilePosition) {
+    var self = this;
 
+    if (self.previousPileType === 'card-pile') {
+        self.cardPiles[previousCardPilePosition].shift();
+    }
+    self.cardPiles[pos].unshift(self.selectedCard);
+    console.log(self.cardPiles);
+
+    self.selectedCard = null;
+}
 Game.prototype._addCardToAce = function (pos) {
     var self = this;
-    
+
     self.aceCards[pos].unshift(self.selectedCards);
+
 }
 
 Game.prototype._showNextFlippedCard = function() {
@@ -131,19 +173,23 @@ Game.prototype._showNextFlippedCard = function() {
 Game.prototype._moveFlippedCardTo = function (elem) {
     var self = this;
 
+    self._removeChildOf(elem);
     elem.appendChild(self.selectedCardElement);
 }
 
-Game.prototype._drawAceCard = function () {
-    var self = this;
-    var card = self.acePile[0];
+// Game.prototype._showNextAce = function () {
+//     var self= this;
+//     self.selectedCards = self.aceCards[0].shift();
+// }
+// Game.prototype._drawAce = function () {
+//     var self = this;
+//     var card = self.aceCards[0];
 
-    if (card) {
-        // var cardElement = card.createCardElement();
-        self._removeChildOf(self.aceStack1);
-        self.aceStack1.append(self.selectedCardElement);
-    }
-}
+//     if(card) {
+//         self._removeChildOf(self.aceCards)
+//         self.aceCards.appendChild(self.selectedCard)
+//     }
+// }
 
 //Pre:- The flipped it will be always at posision 0
 Game.prototype._drawFlippedCard = function () {
@@ -250,13 +296,55 @@ Game.prototype.buildLayout = function () {
     self.cardsPilesElement = document.createElement('div');
     self.cardsPilesElement.setAttribute('class', 'card-piles-container');
 
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile1');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
 
-    for (var i = 0; i < 7; i++) {
-        var cardPile = document.createElement('div');
-        cardPile.setAttribute('class', 'card-pile');
-        cardPile.addEventListener('click', self._handleClick);
-        self.cardsPilesElement.appendChild(cardPile);
-    }
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile2');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile3');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile4');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile5');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile6');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    var cardPile = document.createElement('div');
+    cardPile.setAttribute('class', 'card-pile');
+    cardPile.setAttribute('id', 'card-pile7');
+    cardPile.addEventListener('click', self._handleClick);
+    self.cardsPilesElement.appendChild(cardPile);
+
+    //HOW DO I ADD A GD ID IN A LOOP
+    // for (var i = 0; i < 7; i++) {
+    //     var cardPile = document.createElement('div');
+    //     cardPile.setAttribute('class', 'card-pile');
+    //     cardPile.addEventListener('click', self._handleClick);
+    //     self.cardsPilesElement.appendChild(cardPile);
+    // }
     self.gameElement.appendChild(self.cardsPilesElement);
 
     // SCORE
