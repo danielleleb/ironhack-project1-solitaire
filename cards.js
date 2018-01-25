@@ -20,6 +20,7 @@ Card.prototype.createCardElement = function() {
     cardElement.appendChild(cardSuit);
 
     var cardValue = document.createElement('h2');
+
     cardValue.innerText = self.value
     cardElement.appendChild(cardValue);
 

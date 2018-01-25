@@ -32,17 +32,15 @@ function Game(mainElement, timer) {
 
     self.deck;
     self.flippedCards;
-    self.selectedCard;
     self.aceCards;
     self.pileCards;
+    self.selectedCard;
 
     self._handleClick = function(e) {
-        console.log(e.currentTarget);
         if (self.origin) {
-            self._computeOrigin(e.currentTarget);
-            self._computeDestination(e.currentTarget.id);
+            self._computeMovement(e.currentTarget);
             self._restartTrackingMovement();
-            console.log(self.pileCards);
+
         }
         //first click
         else if (e.currentTarget.children.length > 0){
@@ -79,30 +77,56 @@ Game.prototype.init = function() {
     self.buildLayout();
     self.createDeck();
     self.startGame();
+
 }
 
 
-Game.prototype._computeOrigin = function(element) {
+Game.prototype._computeMovement = function(destinationElement) {
+    var self = this;
+
+    var destination = destinationElement.id;
+
+    if (destination.includes('ace-stack') || destination.includes('card-pile')) {
+        //view
+        self._computeVisualDestination(destinationElement, destination)
+        //data
+        self._computeDataDestination(destination)
+    }
+}
+
+Game.prototype._computeVisualDestination =  function (destinationElement, destination) {
     var self = this;
     
-    if(self.origin === 'flipped-card') {
-        self._moveCardTo(element);
-        self._showNextFlippedCard();    
+    var expand = false;
+
+    if (destination.includes('card-pile')) {
+        expand = true;
     }
-    if (self.origin.includes('ace-stack')) {
-        self._moveCardTo(element);
-        self._showNextAceCard(self.origin);
+
+    //------
+    if(self.origin === 'flipped-card') {
+        self._moveCardTo(destinationElement, expand);
+        self._showNextFlippedCard();
+    }
+    if(self.origin.includes('ace-stack')){
+        self._moveCardTo(destinationElement, expand);
+        self._showNextAceCard();
+    }
+    if(self.origin.includes('card-pile')) {
+        self._moveCardTo(destinationElement, expand);
+        self._showNextPileCard();
     }
 }
 
-Game.prototype._computeDestination = function (id) {
+Game.prototype._computeDataDestination = function (destination) {
     var self = this;
-    if (id.includes('ace-stack')) {    
-        var aceStackPosition = self._getNumberFrom(id);
+
+    if (destination.includes('ace-stack')) {    
+        var aceStackPosition = self._getNumberFrom(destination);
         self._addCardToAce(aceStackPosition)   
     }
-    if (id.includes('card-pile')) {
-        var cardPilePosition = self._getNumberFrom(id)
+    if (destination.includes('card-pile')) {
+        var cardPilePosition = self._getNumberFrom(destination)
         self._addCardToPile(cardPilePosition);
     }  
 }
@@ -145,8 +169,9 @@ Game.prototype._drawFlippedCard = function () {
 
 // ----- ACE CARDS METHODS -----
 
-Game.prototype._showNextAceCard = function (id) {
+Game.prototype._showNextAceCard = function () {
     var self = this;
+    var id = self.origin;
 
     var pos = self._getNumberFrom(id);
     self._shiftAceCard(pos);
@@ -178,41 +203,40 @@ Game.prototype._drawAceCard = function (pos) {
 }
 
 // ----- PILE CARDS METHODS -----
-Game.prototype._showNextPileCard = function(id) {
+Game.prototype._showNextPileCard = function() {
+    //Remove the ones we move
     var self = this;
+    var id = self.origin;
 
     var pos = self._getNumberFrom(id);
     self._shiftPileCard(pos);  
-    self._drawPileCard(pos);
 }
 
-//// FROM HERE!!!
-Game.prototype._shiftPileCard = function () {
+// -- DANIELLE DID ITTTTTT!!!
+Game.prototype._addCardToPile = function (pos) {
     var self = this;
-    self.selectedCard = self.pileCards.shift();
+    self.pileCards[pos].unshift(self.selectedCard);
+
+} 
+
+Game.prototype._shiftPileCard = function (pos) {
+    var self = this;
+
+    self.pileCards[pos].pop();
 }   
 
-Game.prototype._addPileCard = function() {
+Game.prototype._drawPileCard = function (pos) {
     var self = this;
-    self.pileCards.unshift(self.deck.shift());
-}
-
-Game.prototype._drawPileCard = function () {
-    var self = this;
-    var card = self.pileCards[0];
-
-    if (card) {
-        var cardElement = card.createCardElement();
-        self._removeChildOf(self.pileCardElement[pos]);
-        self.pileCardElement[pos].appendChild(cardElement);
-    }
+    var parentElement = self.selectedCardElement.parentElement;
+    self._removeChildOf(parentElement);
 }
 
 // ----- ELEMENTS CARDS METHODS -----
-Game.prototype._moveCardTo = function (elem) {
+Game.prototype._moveCardTo = function (elem, expand) {
     var self = this;
-
-    self._removeChildOf(elem);
+    if (!expand) {
+        self._removeChildOf(elem);
+    }
     elem.appendChild(self.selectedCardElement);
 }
 
@@ -224,16 +248,9 @@ Game.prototype._getNumberFrom = function (id) {
 //TODO:- Change name and behaviour
 Game.prototype._removeChildOf = function (element) {
     if (element.children.length > 0) {
-        element.removeChild(element.firstChild);
+        element.removeChild(element.lastChild);
     }
 }
-
-Game.prototype._removeChildInNestedArray = function(array) {
-    if (array.children.length > 0) {
-        array.removeChild(array.firstChild);
-    }
-}
-
 
 Game.prototype.startGame = function() {
     //show all the cards in the "Zone 3"
@@ -243,7 +260,13 @@ Game.prototype.startGame = function() {
 Game.prototype._selectCard = function(element) {
     var self = this;
     
-    self.selectedCardElement = self._getChildrenElementInPosition(element, 0);
+    if (element.id.includes('card-pile')) {
+        self.selectedCardElement = self._getChildrenElementInPosition(element, element.children.length - 1);
+    } 
+    else {
+        self.selectedCardElement = self._getChildrenElementInPosition(element, 0);
+    }
+
     self.selectedCardElement.classList.add('on');
 }
 
@@ -256,7 +279,6 @@ Game.prototype._unselectCard = function () {
 Game.prototype._getChildrenElementInPosition = function(element, pos) {
     return element.children[pos];
 }
-
 
 Game.prototype.buildLayout = function () {
     var self = this;
@@ -298,8 +320,8 @@ Game.prototype.buildLayout = function () {
     self.gameElement.appendChild(freeCardsElement);
 
     // CARD PILES IN CENTER
-    self.cardsPilesElement = document.createElement('div');
-    self.cardsPilesElement.setAttribute('class', 'card-piles-container');
+    self.pileCardElement = document.createElement('div');
+    self.pileCardElement.setAttribute('class', 'card-piles-container');
 
     //HOW DO I ADD A GD ID IN A LOOP
     for (var i = 0; i < 7; i++) {
@@ -307,9 +329,9 @@ Game.prototype.buildLayout = function () {
         cardPile.setAttribute('class', 'card-pile');
         cardPile.setAttribute('id', 'card-pile' +i);
         cardPile.addEventListener('click', self._handleClick);
-        self.cardsPilesElement.appendChild(cardPile);
+        self.pileCardElement.appendChild(cardPile);
     }
-    self.gameElement.appendChild(self.cardsPilesElement);
+    self.gameElement.appendChild(self.pileCardElement);
 
     // SCORE
     self.scoreElement = document.createElement('div');
