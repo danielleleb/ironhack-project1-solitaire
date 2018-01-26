@@ -74,6 +74,7 @@ html {
     height: 90%;
     width: 20%;
     border: 1px solid gray;
+    border-radius: 7px;
 }
 
 .free-cards {
@@ -98,6 +99,7 @@ html {
     height: 90%;
     width: 44%;
     border: 1px solid gray;
+    border-radius: 7px;
 }
 
 .card-piles-container {
@@ -115,6 +117,7 @@ html {
     height: 90%;
     width: 10%;
     border: 1px solid gray;
+    border-radius: 7px;
 }
 
 .score-container {

@@ -84,7 +84,7 @@ function Game(mainElement, timer) {
     self.pileCardElement;
     self.selectedCardElement;
     self.scoreElement;
-    self.moves;
+    self.movesElement;
 
     self.scoreElement;
 
@@ -162,7 +162,7 @@ Game.prototype._computeMovement = function(destinationElement) {
 
 Game.prototype._updateMoves = function(mover) {
     var self = this;
-    self.moves.innerText = "Moves: " + mover;
+    self.movesElement.innerText = "Moves: " + mover;
 }
 
 Game.prototype._computeVisualDestination =  function (destinationElement, destination) {
@@ -408,10 +408,10 @@ Game.prototype.buildLayout = function () {
     self.scoreElement = document.createElement('div');
     self.scoreElement.setAttribute('class', 'score-container');
 
-    self.moves = document.createElement('h3');
-    self.moves.setAttribute('class', 'moves');
-    self.moves.innerText = "Moves: " + self.movesCounter;
-    self.scoreElement.appendChild(self.moves);
+    self.movesElement = document.createElement('h3');
+    self.movesElement.setAttribute('class', 'moves');
+    self.movesElement.innerText = "Moves: " + self.movesCounter;
+    self.scoreElement.appendChild(self.movesElement);
 
     
     self.gameElement.appendChild(self.scoreElement);
