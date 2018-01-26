@@ -90,7 +90,7 @@ function main() {
         gameOverElement.appendChild(textDiv)
 ;
         var title = document.createElement('h1');
-        title.innerText = 'you lost';
+        title.innerText = 'you lost :(';
         textDiv.appendChild(title);
 
         var yourMoves = document.createElement('h2');

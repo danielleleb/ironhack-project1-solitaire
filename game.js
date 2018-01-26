@@ -72,7 +72,7 @@ function Game(mainElement, timer) {
     self.score;
     self.width;
     self.height;
-    self.movesCounter;
+    self.movesCounter = 0;
     
     self.origin;
     
@@ -83,6 +83,8 @@ function Game(mainElement, timer) {
     self.aceCardElement;
     self.pileCardElement;
     self.selectedCardElement;
+    self.scoreElement;
+    self.moves;
 
     self.scoreElement;
 
@@ -141,7 +143,6 @@ Game.prototype.init = function() {
     self.buildLayout();
     self.createDeck();
     self.startGame();
-
 }
 
 Game.prototype._computeMovement = function(destinationElement) {
@@ -155,7 +156,13 @@ Game.prototype._computeMovement = function(destinationElement) {
         //data
         self._computeDataDestination(destination);
         self.movesCounter++;
+        self._updateMoves(self.movesCounter)
     }
+}
+
+Game.prototype._updateMoves = function(mover) {
+    var self = this;
+    self.moves.innerText = "Moves: " + mover;
 }
 
 Game.prototype._computeVisualDestination =  function (destinationElement, destination) {
@@ -400,16 +407,12 @@ Game.prototype.buildLayout = function () {
     // SCORE
     self.scoreElement = document.createElement('div');
     self.scoreElement.setAttribute('class', 'score-container');
-    
-    var moves = document.createElement('h3');
-    moves.setAttribute('class', 'moves');
-    moves.innerText = "Moves: " + self.movesCounter;
-    self.scoreElement.appendChild(moves);
-    
-    // var timer = document.createElement('h3');
-    // timer.setAttribute('class', 'timer');
-    // timer.innerText = "time: " + self.timerCounter;
-    // self.scoreElement.appendChild(timer);
+
+    self.moves = document.createElement('h3');
+    self.moves.setAttribute('class', 'moves');
+    self.moves.innerText = "Moves: " + self.movesCounter;
+    self.scoreElement.appendChild(self.moves);
+
     
     self.gameElement.appendChild(self.scoreElement);
 
@@ -431,7 +434,7 @@ Game.prototype.onGameOver = function (callback) {
 
 Game.prototype.createDeck = function (){
     var self = this;
-
+   
     for (var i = 0; i < CARDS.length; i++) {
         var suit = CARDS[i].suit;
         var value = CARDS[i].value;

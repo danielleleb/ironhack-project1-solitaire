@@ -13,7 +13,8 @@ html {
     font-family: 'Montserrat', sans-serif;
 }
 #background {
-    background-color: rgb(96, 152, 213);
+    background: radial-gradient(rgb(8, 75, 32), rgb(10, 89, 48), rgb(4, 70, 4))
+
     /* height: 500px;
     width: 500px; */
     /* display:flex;
