@@ -2,6 +2,65 @@
 
 'use strict';
 
+var CARDS = [
+    { suit: 'spades', value: '2', img: './PNG-cards-1.3/2_of_spades.png' },
+    { suit: 'spades', value: '3', img: './PNG-cards-1.3/3_of_spades.png' },
+    { suit: 'spades', value: '4', img: './PNG-cards-1.3/4_of_spades.png' },
+    { suit: 'spades', value: '5', img: './PNG-cards-1.3/5_of_spades.png' },
+    { suit: 'spades', value: '6', img: './PNG-cards-1.3/6_of_spades.png' },
+    { suit: 'spades', value: '7', img: './PNG-cards-1.3/7_of_spades.png' },
+    { suit: 'spades', value: '8', img: './PNG-cards-1.3/8_of_spades.png' },
+    { suit: 'spades', value: '9', img: './PNG-cards-1.3/9_of_spades.png' },
+    { suit: 'spades', value: '10', img: './PNG-cards-1.3/10_of_spades.png' },
+    { suit: 'spades', value: 'J', img: './PNG-cards-1.3/jack_of_spades.png' },
+    { suit: 'spades', value: 'Q', img: './PNG-cards-1.3/queen_of_spades.png' },
+    { suit: 'spades', value: 'K', img: './PNG-cards-1.3/king_of_spades.png' },
+    { suit: 'spades', value: 'A', img: './PNG-cards-1.3/ace_of_spades.png' },
+
+    { suit: 'clubs', value: '2', img: './PNG-cards-1.3/2_of_clubs.png' },
+    { suit: 'clubs', value: '3', img: './PNG-cards-1.3/3_of_clubs.png' },
+    { suit: 'clubs', value: '4', img: './PNG-cards-1.3/4_of_clubs.png' },
+    { suit: 'clubs', value: '5', img: './PNG-cards-1.3/5_of_clubs.png' },
+    { suit: 'clubs', value: '6', img: './PNG-cards-1.3/6_of_clubs.png' },
+    { suit: 'clubs', value: '7', img: './PNG-cards-1.3/7_of_clubs.png' },
+    { suit: 'clubs', value: '8', img: './PNG-cards-1.3/8_of_clubs.png' },
+    { suit: 'clubs', value: '9', img: './PNG-cards-1.3/9_of_clubs.png' },
+    { suit: 'clubs', value: '10', img: './PNG-cards-1.3/10_of_clubs.png' },
+    { suit: 'clubs', value: 'J', img: './PNG-cards-1.3/jack_of_clubs.png' },
+    { suit: 'clubs', value: 'Q', img: './PNG-cards-1.3/queen_of_clubs.png' },
+    { suit: 'clubs', value: 'K', img: './PNG-cards-1.3/king_of_clubs.png' },
+    { suit: 'clubs', value: 'A', img: './PNG-cards-1.3/ace_of_clubs.png' },
+
+    { suit: 'diamonds', value: '2', img: './PNG-cards-1.3/2_of_diamonds.png' },
+    { suit: 'diamonds', value: '3', img: './PNG-cards-1.3/3_of_diamonds.png' },
+    { suit: 'diamonds', value: '4', img: './PNG-cards-1.3/4_of_diamonds.png' },
+    { suit: 'diamonds', value: '5', img: './PNG-cards-1.3/5_of_diamonds.png' },
+    { suit: 'diamonds', value: '6', img: './PNG-cards-1.3/6_of_diamonds.png' },
+    { suit: 'diamonds', value: '7', img: './PNG-cards-1.3/7_of_diamonds.png' },
+    { suit: 'diamonds', value: '8', img: './PNG-cards-1.3/8_of_diamonds.png' },
+    { suit: 'diamonds', value: '9', img: './PNG-cards-1.3/9_of_diamonds.png' },
+    { suit: 'diamonds', value: '10', img: './PNG-cards-1.3/10_of_diamonds.png' },
+    { suit: 'diamonds', value: 'J', img: './PNG-cards-1.3/jack_of_diamonds.png' },
+    { suit: 'diamonds', value: 'Q', img: './PNG-cards-1.3/queen_of_diamonds.png' },
+    { suit: 'diamonds', value: 'K', img: './PNG-cards-1.3/king_of_diamonds.png' },
+    { suit: 'diamonds', value: 'A', img: './PNG-cards-1.3/ace_of_diamonds.png' },
+
+    { suit: 'hearts', value: '2', img: './PNG-cards-1.3/2_of_hearts.png' },
+    { suit: 'hearts', value: '3', img: './PNG-cards-1.3/3_of_hearts.png' },
+    { suit: 'hearts', value: '4', img: './PNG-cards-1.3/4_of_hearts.png' },
+    { suit: 'hearts', value: '5', img: './PNG-cards-1.3/5_of_hearts.png' },
+    { suit: 'hearts', value: '6', img: './PNG-cards-1.3/6_of_hearts.png' },
+    { suit: 'hearts', value: '7', img: './PNG-cards-1.3/7_of_hearts.png' },
+    { suit: 'hearts', value: '8', img: './PNG-cards-1.3/8_of_hearts.png' },
+    { suit: 'hearts', value: '9', img: './PNG-cards-1.3/9_of_hearts.png' },
+    { suit: 'hearts', value: '10', img: './PNG-cards-1.3/10_of_hearts.png' },
+    { suit: 'hearts', value: 'J', img: './PNG-cards-1.3/jack_of_hearts.png' },
+    { suit: 'hearts', value: 'Q', img: './PNG-cards-1.3/queen_of_hearts.png' },
+    { suit: 'hearts', value: 'K', img: './PNG-cards-1.3/king_of_hearts.png' },
+    { suit: 'hearts', value: 'A', img: './PNG-cards-1.3/ace_of_hearts.png' }
+    
+]
+
 function Game(mainElement, timer) {
     var self = this;
     
@@ -9,6 +68,7 @@ function Game(mainElement, timer) {
     self.timerCounter = timer;
     
     self.finished;
+    self.gameOver;
     self.score;
     self.width;
     self.height;
@@ -40,7 +100,7 @@ function Game(mainElement, timer) {
         if (self.origin) {
             self._computeMovement(e.currentTarget);
             self._restartTrackingMovement();
-
+            console.log(self.movesCounter);
         }
         //first click
         else if (e.currentTarget.children.length > 0){
@@ -49,9 +109,13 @@ function Game(mainElement, timer) {
         }
     }  
 
-    self._handleCardStackClick = function(e) {
+    self._handleCardStackClick = function() {
         self._addFlippedCard();  
         self._drawFlippedCard();  
+    }
+
+    self._handleGiveUpClick = function () {
+        self.gameOver(self.movesCounter);
     }
   
     self.init();
@@ -80,7 +144,6 @@ Game.prototype.init = function() {
 
 }
 
-
 Game.prototype._computeMovement = function(destinationElement) {
     var self = this;
 
@@ -88,9 +151,10 @@ Game.prototype._computeMovement = function(destinationElement) {
 
     if (destination.includes('ace-stack') || destination.includes('card-pile')) {
         //view
-        self._computeVisualDestination(destinationElement, destination)
+        self._computeVisualDestination(destinationElement, destination);
         //data
-        self._computeDataDestination(destination)
+        self._computeDataDestination(destination);
+        self.movesCounter++;
     }
 }
 
@@ -339,30 +403,41 @@ Game.prototype.buildLayout = function () {
     
     var moves = document.createElement('h3');
     moves.setAttribute('class', 'moves');
-    moves.innerText = "moves: " + self.movesCounter;
+    moves.innerText = "Moves: " + self.movesCounter;
     self.scoreElement.appendChild(moves);
     
-    var timer = document.createElement('h3');
-    timer.setAttribute('class', 'timer');
-    timer.innerText = "time: " + self.timerCounter;
-    self.scoreElement.appendChild(timer);
+    // var timer = document.createElement('h3');
+    // timer.setAttribute('class', 'timer');
+    // timer.innerText = "time: " + self.timerCounter;
+    // self.scoreElement.appendChild(timer);
     
     self.gameElement.appendChild(self.scoreElement);
 
+    //Button give up
+    var button = document.createElement('button');
+    button.innerText = 'Give up';
+    button.setAttribute('class', 'give-up')
+    button.addEventListener('click', self._handleGiveUpClick);
+    self.scoreElement.appendChild(button);
     // MAIN APPEND
     self.mainElement.appendChild(self.gameElement);
+}
+
+Game.prototype.onGameOver = function (callback) {
+    var self = this;
+
+    self.gameOver = callback;
 }
 
 Game.prototype.createDeck = function (){
     var self = this;
 
-    for (var i = 0; i < self.suits.length; i++) {
-        var suit = self.suits[i];
-        for (var j = 0; j < self.values.length; j++) {
-            var value = self.values[j];
-            var newCard = new Card(value, suit, self.gameElement);
-            self.deck.push(newCard);
-        }   
+    for (var i = 0; i < CARDS.length; i++) {
+        var suit = CARDS[i].suit;
+        var value = CARDS[i].value;
+        var img = CARDS[i].img;
+        var newCard = new Card(value, suit, img, self.gameElement);
+        self.deck.push(newCard);
     }
 
     self.shuffleCards();

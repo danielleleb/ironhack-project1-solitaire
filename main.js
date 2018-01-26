@@ -3,7 +3,6 @@
 
 function main() {
     var STARTING_TIME = 0;
-    var NUMBER_OF_MOVES = 0;
 
     var mainElement = document.querySelector('#site-main');
     var stage;
@@ -55,6 +54,11 @@ function main() {
         stage = 'game';
         game = new Game(mainElement, STARTING_TIME);
 
+        game.onGameOver(function (moves) {
+            destroyGame();
+            buildGameOver(moves);
+        });
+
         // window.setTimeout(function() {
         //     destroyGame();
         //     buildGameOver();
@@ -74,29 +78,29 @@ function main() {
         buildGame();
     }
 
-    function buildGameOver() {
+    function buildGameOver(moves) {
         stage = 'gameOver';
 
         //create dom elements
         gameOverElement = document.createElement('div');
         gameOverElement.setAttribute('id', 'game-over');
 
+        var textDiv = document.createElement('div');
+        textDiv.setAttribute('class', 'game-over-text')
+        gameOverElement.appendChild(textDiv)
+;
         var title = document.createElement('h1');
         title.innerText = 'you lost';
-        gameOverElement.appendChild(title);
-
-        var yourTime = document.createElement('h2');
-        yourTime.innerText = 'your time: ' + STARTING_TIME;
-        gameOverElement.appendChild(yourTime);
+        textDiv.appendChild(title);
 
         var yourMoves = document.createElement('h2');
-        yourMoves.innerText = 'number of moves: ' + NUMBER_OF_MOVES;
-        gameOverElement.appendChild(yourMoves);
+        yourMoves.innerText = 'number of moves: ' + moves;
+        textDiv.appendChild(yourMoves);
 
 
         playAgainButton = document.createElement('button');
         playAgainButton.innerText = 'restart';
-        gameOverElement.appendChild(playAgainButton);
+        textDiv.appendChild(playAgainButton);
 
         //append to site-main
         mainElement.appendChild(gameOverElement);
@@ -112,7 +116,7 @@ function main() {
         gameOverElement.remove();
     }
 
-    buildGame();
+    buildSplash();
 }
 
 window.onload = main;

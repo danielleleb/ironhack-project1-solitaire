@@ -10,9 +10,10 @@ html {
   body {
     margin: 0;
     text-align: center;
-  }
+    font-family: 'Montserrat', sans-serif;
+}
 #background {
-    background-color: greenyellow;
+    background-color: rgb(96, 152, 213);
     /* height: 500px;
     width: 500px; */
     /* display:flex;
@@ -20,11 +21,47 @@ html {
     flex-wrap: wrap;
     justify-content: space-between; */
 }  
+#game-over{
+    background-image: url('./movingcards.gif');
+     background-repeat: round;
+    background-repeat: no-repeat;
+    background-size: 100% 95%;
+} 
+.game-over-text {
+    border-radius: 10px;
+    padding: 30px;
+    color: white;
+    background-color: rgba(128, 128, 128, 0.481)
+}
+
+#splash,
+#game-over{
+    /* height: 600px; */
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#splash button,
+#game-over button {
+    padding: 10px 20px;
+    color: white;
+}
+
+#splash {
+    color: white;
+    background-image: url('./cardsshuffle.gif');
+    background-repeat: round;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
 
 .ace-space {
-    height: 18%;
+    height: 24%;
     width: 48%;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     float: right;
     display: flex;
     flex-direction: row;
@@ -39,13 +76,20 @@ html {
 }
 
 .free-cards {
-    height: 18%;
+    height: 24%;
     width: 24%;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+}
+.card-stack {
+    background-image: url('./card-back.jpg');
+    max-width: 100%;
+    max-height: 100%;
+    /* background-size: cover; */
+    background-repeat: round;
 }
 
 .card-stack,
@@ -56,9 +100,9 @@ html {
 }
 
 .card-piles-container {
-    height: 18%;
+    height: 24%;
     width: 95%;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     margin: 10% auto;
     display:flex;
     align-items: center;
@@ -73,44 +117,75 @@ html {
 }
 
 .score-container {
+    margin-right: 35px;
+    display: flex;
     height: 10%;
-    width: 40%;
-    border: 2px solid black;
+    width: 25%;
+    /* border: 2px solid black; */
     position: fixed;
     bottom: 0;
     right: 0;
-    display:flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-direction: row;
 }
 
-.sprite {
-    background-image: url('./baraja-poker1.png');
-    height:129px;
-    width: 92px;
+.score-container button {
+    margin-bottom: 10px;
+}
+.score-container h3 {
+    margin-left: 35px;
+
 }
 
+
 .card {
-    background: white;
+    object-fit: fill;
+    max-width: 100%;
+    height: 100%;
+    display: block;
+    size: inherit;
 }
+
 
 .on {
     border: 2px solid blue;
 }
-.on-top {
-    position:absolute;
-    z-index:1000000;
-    border: 2px solid green;
-}
-.under {
-    position: absolute;
-    z-index: 1;
+
+
+.card img {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; 
+    object-fit: fill;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+} 
+
+/* .flipped-card {   
+     overflow: hidden;
+
+
+} */
+
+button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 30px;
+    border-radius: 15px;
+    background-color: rgba(128, 128, 128, 0.316);
+    border: none;
 }
 
-.flipped-card div {
-    display: none;
-}
-.flipped-card div:last-child {
-    display: block;
+.give-up {
+height: 100%;
+width: 50%;
+
+    /* position: fixed;
+    bottom: 0; */
+    /* float: center;
+    margin-right: auto;
+    margin-left: auto; */
 }
